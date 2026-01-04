@@ -1,6 +1,6 @@
-# Student Tasking (Django)
+# Student Tasking App
 
-A simple, fully functional student task tracking web app built with **Python + Django**.
+A simple, fully functional student task tracking web app.
 
 ## Features
 - Accounts (sign up / log in / log out)
