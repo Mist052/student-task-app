@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}
+  {% if form.instance.pk %}Edit task{% else %}New task{% endif %} · Student Tasking
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h3 mb-0">
+    {% if form.instance.pk %}Edit task{% else %}New task{% endif %}
+  </h1>
+  <a class="btn btn-outline-secondary" href="{% url 'tasks:task_list' %}">Back</a>
+</div>
+
+<form method="post" class="card card-body">
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <div class="mb-3">
+    <label class="form-label">Title</label>
+    {{ form.title }}
+    {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    {{ form.description }}
+    {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Course</label>
+      {{ form.course }}
+      <div class="form-text">Optional. Create courses in the Courses tab.</div>
+      {% if form.course.errors %}<div class="text-danger small">{{ form.course.errors }}</div>{% endif %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Tags</label>
+      {{ form.tags }}
+      <div class="form-text">Optional. Create tags in the Tags tab.</div>
+      {% if form.tags.errors %}<div class="text-danger small">{{ form.tags.errors }}</div>{% endif %}
+    </div>
+  </div>
+
+  <div class="row g-3 mt-1">
+    <div class="col-md-4">
+      <label class="form-label">Due date</label>
+      {{ form.due_at }}
+      {% if form.due_at.help_text %}<div class="form-text">{{ form.due_at.help_text }}</div>{% endif %}
+      {% if form.due_at.errors %}<div class="text-danger small">{{ form.due_at.errors }}</div>{% endif %}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Priority</label>
+      {{ form.priority }}
+      {% if form.priority.errors %}<div class="text-danger small">{{ form.priority.errors }}</div>{% endif %}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Status</label>
+      {{ form.status }}
+      {% if form.status.errors %}<div class="text-danger small">{{ form.status.errors }}</div>{% endif %}
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex gap-2">
+    <button class="btn btn-primary" type="submit">Save</button>
+    {% if form.instance.pk %}
+      <a class="btn btn-outline-danger" href="{% url 'tasks:task_delete' form.instance.pk %}">Delete</a>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

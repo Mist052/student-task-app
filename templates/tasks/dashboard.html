@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Student Tasking{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h3 mb-0">Dashboard</h1>
+  <a class="btn btn-primary" href="{% url 'tasks:task_create' %}">+ New task</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-body">
+      <div class="text-muted small">Open</div>
+      <div class="display-6">{{ counts.open }}</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-body">
+      <div class="text-muted small">Overdue</div>
+      <div class="display-6 {% if counts.overdue %}text-danger{% endif %}">{{ counts.overdue }}</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-body">
+      <div class="text-muted small">Due soon (3 days)</div>
+      <div class="display-6 {% if counts.due_soon %}text-warning{% endif %}">{{ counts.due_soon }}</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card card-body">
+      <div class="text-muted small">Done</div>
+      <div class="display-6">{{ counts.done }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <h2 class="h5 mb-0">Next up</h2>
+      <a class="small" href="{% url 'tasks:task_list' %}?due=soon">View due soon</a>
+    </div>
+    <div class="card">
+      <div class="list-group list-group-flush">
+        {% for task in next_up %}
+          <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+             href="{% url 'tasks:task_detail' task.pk %}">
+            <div>
+              <div class="task-title">{{ task.title }}</div>
+              <div class="text-muted small">
+                {% if task.course %}
+                  <span class="badge-dot" style="background: {{ task.course.color }}"></span>
+                  {{ task.course.name }}
+                {% else %}
+                  No course
+                {% endif %}
+              </div>
+            </div>
+            <div class="text-end">
+              <div class="mono small">{{ task.get_priority_display }}</div>
+              {% if task.due_at %}
+                <div class="small {% if task.is_overdue %}text-danger{% else %}text-muted{% endif %}">
+                  Due {{ task.due_at|date:"Y-m-d H:i" }}
+                </div>
+              {% else %}
+                <div class="small text-muted">No due date</div>
+              {% endif %}
+            </div>
+          </a>
+        {% empty %}
+          <div class="list-group-item text-muted">No upcoming tasks with due dates.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <h2 class="h5 mb-0">Recently completed</h2>
+      <a class="small" href="{% url 'tasks:task_list' %}?status=DONE">View all</a>
+    </div>
+    <div class="card">
+      <div class="list-group list-group-flush">
+        {% for task in recent_done %}
+          <a class="list-group-item list-group-item-action" href="{% url 'tasks:task_detail' task.pk %}">
+            <div class="task-title">{{ task.title }}</div>
+            <div class="text-muted small">
+              Completed {{ task.completed_at|date:"Y-m-d H:i" }}
+            </div>
+          </a>
+        {% empty %}
+          <div class="list-group-item text-muted">Nothing completed yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

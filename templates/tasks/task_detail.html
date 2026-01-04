@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}{{ task.title }} · Student Tasking{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h1 class="h3 mb-1">{{ task.title }}</h1>
+    <div class="text-muted small">
+      {% if task.course %}
+        <span class="badge-dot" style="background: {{ task.course.color }}"></span>
+        {{ task.course.name }}
+      {% else %}
+        No course
+      {% endif %}
+      · Created {{ task.created_at|date:"Y-m-d H:i" }}
+      · Updated {{ task.updated_at|date:"Y-m-d H:i" }}
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'tasks:task_update' task.pk %}">Edit</a>
+    <a class="btn btn-outline-danger" href="{% url 'tasks:task_delete' task.pk %}">Delete</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card card-body">
+      <h2 class="h5">Details</h2>
+
+      {% if task.description %}
+        <p class="mb-3">{{ task.description|linebreaksbr }}</p>
+      {% else %}
+        <p class="text-muted mb-3">No description.</p>
+      {% endif %}
+
+      <div class="d-flex flex-wrap gap-2">
+        {% if task.tags.all %}
+          {% for tag in task.tags.all %}
+            <span class="badge text-bg-secondary">{{ tag.name }}</span>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card card-body">
+      <h2 class="h6">Status</h2>
+
+      <div class="mb-2">
+        <div class="text-muted small">Current</div>
+        <div>
+          {% if task.status == 'DONE' %}
+            <span class="badge text-bg-success">{{ task.get_status_display }}</span>
+          {% elif task.status == 'INPR' %}
+            <span class="badge text-bg-warning">{{ task.get_status_display }}</span>
+          {% else %}
+            <span class="badge text-bg-light text-dark">{{ task.get_status_display }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <div class="text-muted small">Priority</div>
+        <div class="mono">{{ task.get_priority_display }}</div>
+      </div>
+
+      <div class="mb-3">
+        <div class="text-muted small">Due</div>
+        {% if task.due_at %}
+          <div class="{% if task.is_overdue %}text-danger{% endif %}">
+            {{ task.due_at|date:"Y-m-d H:i" }}
+          </div>
+        {% else %}
+          <div class="text-muted">—</div>
+        {% endif %}
+      </div>
+
+      <form method="post" action="{% url 'tasks:task_toggle_done' task.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'tasks:task_detail' task.pk %}">
+        {% if task.status == 'DONE' %}
+          <button class="btn btn-outline-success w-100" type="submit">Mark as not done</button>
+          {% if task.completed_at %}
+            <div class="text-muted small mt-2">Completed {{ task.completed_at|date:"Y-m-d H:i" }}</div>
+          {% endif %}
+        {% else %}
+          <button class="btn btn-success w-100" type="submit">Mark as done</button>
+        {% endif %}
+      </form>
+
+      <a class="btn btn-link mt-3 p-0" href="{% url 'tasks:task_list' %}">← Back to tasks</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

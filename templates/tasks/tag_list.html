@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Tags · Student Tasking{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h3 mb-0">Tags</h1>
+  <a class="btn btn-primary" href="{% url 'tasks:tag_create' %}">+ New tag</a>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th style="width: 140px">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tags %}
+          <tr>
+            <td><span class="badge text-bg-secondary">{{ t.name }}</span></td>
+            <td>
+              <a class="btn btn-sm btn-outline-danger" href="{% url 'tasks:tag_delete' t.pk %}">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="2" class="text-muted p-4">No tags yet. Tags help you slice tasks (e.g., “Reading”, “Exam”, “Project”).</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
